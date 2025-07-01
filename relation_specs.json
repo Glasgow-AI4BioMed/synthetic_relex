@@ -16,7 +16,7 @@
     "interacts_with",
     "synergistic_with",
     "antagonistic_to",
-    "precursor_of",
+    "precursor_of"
   ],
   "Gene|Disease": [
     "mutation_in_causes",
