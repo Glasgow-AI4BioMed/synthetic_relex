@@ -1,0 +1,52 @@
+{
+  "Chemical|Disease": [
+    "treats",
+    "causes",
+    "prevents",
+    "contraindicated_for"
+  ],
+  "Chemical|Gene": [
+    "inhibits",
+    "activates",
+    "metabolized_by",
+    "binds_to",
+    "modulates_expression_of"
+  ],
+  "Chemical|Chemical": [
+    "interacts_with",
+    "synergistic_with",
+    "antagonistic_to",
+    "precursor_of",
+  ],
+  "Gene|Disease": [
+    "mutation_in_causes",
+    "plays_causal_role_in",
+    "biomarker_for"
+  ],
+  "Gene|Gene": [
+    "regulates",
+    "upregulates",
+    "downregulates",
+    "interacts_with",
+    "co_expressed_with",
+    "inhibits",
+    "activates",
+    "ortholog_of",
+    "binds_to"
+  ],
+  "DNAMutation|Disease": [
+    "causes"
+  ],
+  "ProteinMutation|Disease": [
+    "causes"
+  ],
+  "DNAMutation|Chemical": [
+    "affects_efficacy_of"
+  ],
+  "ProteinMutation|Chemical": [
+    "affects_efficacy_of"
+  ],
+  "Disease|Disease": [
+    "subtype_of"
+  ]
+}
