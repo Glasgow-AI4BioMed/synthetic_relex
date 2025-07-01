@@ -10,6 +10,13 @@ import jsonlines
 import gzip
 import argparse
 
+def make_id(article_info):
+    id_keys = [ 'article-id_pmid', 'article-id_pmc', 'article-id_doi' ]
+    if all ( not id_key in article_info for id_key in id_keys ):
+        return None
+
+    return "|".join( article_info.get(id_key,'') for id_key in id_keys )
+
 def mark_sentences(nlp, doc):
     for passage in doc.passages:
         passage.sentences = []
@@ -51,6 +58,11 @@ triple_schema = {
 }
 
 def do_openie(llm_model, nlp, doc, relnames):
+    
+    article_info = doc.passages[0].infons
+    doc_id = make_id(article_info)
+    if doc_id is None:
+        return []
 
     mark_sentences(nlp, doc)
 
@@ -89,13 +101,10 @@ def do_openie(llm_model, nlp, doc, relnames):
     prompts = [ chat_template.format(system_prompt=system_prompt, question=question) for question in questions ]
 
     guided_decoding_params = GuidedDecodingParams(json=triple_schema)
-    #results = llm_model.generate(prompts, SamplingParams(max_tokens=1024, guided_decoding=guided_decoding_params))
-
+        
     results = []
     for chunk in chunked(prompts, 100):
         results += llm_model.generate(chunk, SamplingParams(max_tokens=1024, top_k=1, guided_decoding=guided_decoding_params), use_tqdm=False)
-
-    article_info = doc.passages[0].infons
 
     relnames_set = set(relnames)
     final_output = []
@@ -107,7 +116,7 @@ def do_openie(llm_model, nlp, doc, relnames):
             triples = json.loads(output)
             triples = [ (rel,head,tail) for rel,head,tail in triples if head in entity_names and tail in entity_names and rel in relnames_set ]
             #if triples:
-            final_output.append( (sentence_text, entities_with_types, triples, article_info) )
+            final_output.append( (sentence_text, entities_with_types, triples, doc_id) )
         except json.JSONDecodeError:
             continue
 

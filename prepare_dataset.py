@@ -7,13 +7,6 @@ import random
 from collections import defaultdict, Counter
 from datasets import Dataset, DatasetDict
 
-def make_id(article_info):
-    id_keys = [ 'article-id_pmid', 'article-id_pmc', 'article-id_doi' ]
-    if all ( not id_key in article_info for id_key in id_keys ):
-        return None
-
-    return "|".join( article_info.get(id_key,'') for id_key in id_keys )
-
 def split_dataset(data, train_ratio=0.6, val_ratio=0.2, test_ratio=0.2, seed=42):
     # Group samples by doc_id
     doc_id_to_samples = defaultdict(list)
@@ -75,11 +68,7 @@ def main():
     print(f"Only keeping following relations: {rels_to_keep}")
     
     dataset = []
-    for sentence, entities, rels, article_info in sentence_data:
-        doc_id = make_id(article_info)
-        if doc_id is None:
-            continue
-
+    for sentence, entities, rels, doc_id in sentence_data:
         rels = [ (reltype,head,tail) for reltype,head,tail in rels if reltype in rels_to_keep ]
             
         labeled_pairs = { (head,tail):reltype for reltype,head,tail in rels }
