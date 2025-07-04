@@ -3,6 +3,7 @@ from vllm import LLM, SamplingParams
 from vllm.sampling_params import GuidedDecodingParams
 from tqdm.auto import tqdm
 import bioc
+import os
 
 import tarfile
 from io import BytesIO
@@ -57,13 +58,7 @@ triple_schema = {
   }
 }
 
-def do_openie(llm_model, nlp, doc, relnames):
-    
-    article_info = doc.passages[0].infons
-    doc_id = make_id(article_info)
-    if doc_id is None:
-        return []
-
+def do_openie(llm_model, nlp, doc_id, doc, relnames):
     mark_sentences(nlp, doc)
 
     sentences_with_entities = []
@@ -133,6 +128,7 @@ def main():
     parser.add_argument('--output_sentences',type=str,required=True,help='Output filename')
     parser.add_argument('--target_sentence_count',type=int,required=True,help='Number of sentences to aim for')
     parser.add_argument('--relation_specs',type=str,required=True,help='JSON file with information about relations to extract')
+    parser.add_argument('--resume',action='store_true',help='Continue with a previous file and skip already processed documents')
     args = parser.parse_args()
 
     llm_model = LLM(model=args.model_name, 
@@ -148,15 +144,30 @@ def main():
     import spacy
     nlp = spacy.load("en_core_web_sm")
 
+    sentence_count, doc_count = 0, 0
+    previous_doc_ids = set()
+    if args.resume:
+        with gzip.open(args.output_sentences,'rt') as f:
+            reader = jsonlines.Reader(f)
+            previous_doc_ids = [ doc_id for _,_,_,doc_id in reader ]
+            sentence_count = len(previous_doc_ids)
+            previous_doc_ids = set(previous_doc_ids)
+            doc_count = len(previous_doc_ids)
+            
+        print(f"Found {sentence_count} sentences from {doc_count} previously processed documents to be skipped")
+    else:
+        assert not os.path.isfile(args.output_sentences), "Output file already exists. Use --resume or delete the file"
+
     with open(args.relation_specs) as f:
         relation_specs = json.load(f)
     relnames = sorted(set( relation for args,relations in relation_specs.items() for relation in relations ))
     print(f"Extracting {len(relnames)} relation types: {relnames}")
 
-    sentence_count, doc_count = 0, 0
+    
     with tqdm(total=args.target_sentence_count) as pbar:
-        with tarfile.open(args.input_archive, 'r:gz') as tar, gzip.open(args.output_sentences,'wt') as out_f:
+        with tarfile.open(args.input_archive, 'r:gz') as tar, gzip.open(args.output_sentences,'at') as out_f:
             writer = jsonlines.Writer(out_f)
+            pbar.update(sentence_count)
         
             for member in tar:
                 if member.name.lower().endswith('.xml') and member.isfile():
@@ -172,7 +183,14 @@ def main():
                     pbar.set_description(f"Processing: {member.name} - {len(collection.documents)} docs")
 
                     for doc in collection.documents:
-                        rels = do_openie(llm_model, nlp, doc, relnames)
+
+                        # Decide whether to skip this document
+                        article_info = doc.passages[0].infons
+                        doc_id = make_id(article_info)
+                        if doc_id is None or doc_id in previous_doc_ids:
+                            continue
+                        
+                        rels = do_openie(llm_model, nlp, doc_id, doc, relnames)
         
                         writer.write_all(rels)
                         out_f.flush()
