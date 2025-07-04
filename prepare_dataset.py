@@ -57,20 +57,9 @@ def main():
     with open(args.relation_specs) as f:
         relation_specs = json.load(f)
         relation_specs = { tuple(k.split('|')):v for k,v in relation_specs.items() }
-
-    sample_counts = Counter()
-    for sentence, entities, rels, article_info in sentence_data:
-        rels_in_sentence = set( reltype for reltype,head,tail in rels )
-        sample_counts += Counter(rels_in_sentence)
-    print(f"{sample_counts}")
-
-    rels_to_keep = set( reltype for reltype,count in sample_counts.items() if count >= args.min_sample_count )
-    print(f"Only keeping following relations: {rels_to_keep}")
     
     dataset = []
     for sentence, entities, rels, doc_id in sentence_data:
-        rels = [ (reltype,head,tail) for reltype,head,tail in rels if reltype in rels_to_keep ]
-            
         labeled_pairs = { (head,tail):reltype for reltype,head,tail in rels }
     
         for (a_name,a_type),(b_name,b_type) in itertools.product(entities, entities):
@@ -78,6 +67,14 @@ def main():
             if a_name != b_name and (a_type,b_type) in relation_specs:
                 tmp_sentence = sentence.replace(a_name,f'[E1]{a_name}[/E1]').replace(b_name,f'[E2]{b_name}[/E2]')
                 dataset.append( {'doc_id':doc_id, 'text':tmp_sentence, 'label':labeled_pairs.get((a_name,b_name),'none')} )
+
+    sample_counts = Counter( x['label'] for x in dataset )
+    print(f"{sample_counts}")
+
+    rels_to_keep = set( reltype for reltype,count in sample_counts.items() if count >= args.min_sample_count )
+    print(f"Only keeping following relations: {rels_to_keep}")
+
+    dataset = [ x for x in dataset if x['label'] in rels_to_keep ]
                 
     print(f"Created dataset with {len(dataset)} samples")
 
