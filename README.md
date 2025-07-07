@@ -26,7 +26,12 @@ The model is trained from relation annotations that were created using a Llama3.
 The dataset can be accessed through the HuggingFace datasets repo Glasgow-AI4BioMed/synthetic_relex. It can be loaded using the [datasets library](https://pypi.org/project/datasets/) as below:
 
 ```python
+from datasets import load_dataset
 
+dataset = load_dataset('Glasgow-AI4BioMed/synthetic_relex')
+
+# To see a single sample of the dataset:
+dataset['train'][0]
 ```
 
 ## 🛠️ Building the dataset and model
@@ -47,17 +52,17 @@ curl -o BioCXML.0.tar.gz https://ftp.ncbi.nlm.nih.gov/pub/lu/PubTator3/BioCXML.0
 Now we run a large Llama model on sentences from this large archive. The relation_specs.json file outlines the names of relations (and their argument types) to be extracted. A zero-shot prompting method is applied using a quantized version. This requires a larger GPU.
 
 ```bash
-python create_synthetic_labels.py --input_archive BioCXML.0.tar.gz --relation_specs relation_specs.json --output_sentences relex.jsonl.gz --target_sentence_count 100000
+python create_synthetic_labels.py --input_archive BioCXML.0.tar.gz --relation_specs relation_specs.json --output_sentences sentences.jsonl.gz --target_sentence_count 100000
 ```
 
 The annotated sentences are then reformatted into a HuggingFace dataset with appropriate training/validation/test split.
 
 ```bash
-python prepare_dataset.py --input_sentences relex.jsonl.gz --relation_specs relation_specs.json --min_sample_count 10 --output_dataset relex_dataset
+python prepare_dataset.py --input_sentences sentences.jsonl.gz --relation_specs relation_specs.json --min_sample_count 100 --output_dataset synthetic_relex_dataset
 ```
 
 A BERT-based classifier, using [microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext](https://huggingface.co/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext) as the base model, is then trained with the dataset with a Sequence Classification objective:
 
 ```bash
-python train_bert_model.py --input_dataset relex_dataset --output_model relex_model
+python train_bert_model.py --input_dataset synthetic_relex_dataset --output_model synthetic_relex_model
 ```

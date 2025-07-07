@@ -1,3 +1,13 @@
+---
+task: sequence-classification
+tags:
+- biomedical
+- bionlp
+- relation extraction
+license: mit
+base_model: microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext
+---
+
 # synthetic_relex model for biomedical relation extraction
 
 This is a relation extraction model that is distilled from Llama 3.3 70B down to a BERT model. It is a [microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext](https://huggingface.co/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext) model that has been fine-tuned on synthetic labels created with Llama 3.3 70B when prompted with sentences from [PubTator Central](https://www.ncbi.nlm.nih.gov/research/pubtator3/).
