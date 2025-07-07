@@ -10,6 +10,6 @@ More information about the model and dataset can be found at the project repo: h
 
 The dataset can be loaded using the HuggingFace [datasets library](https://pypi.org/project/datasets/) as below:
 
-```
+```python
 
 ```

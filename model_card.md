@@ -12,7 +12,7 @@ The model can classify the relationship between two entities into one of X label
 
 To use the model, take the input text and wrap the first entity in [E1][/E1] tags and second entity in [E2][/E2] tags as in the example below. The classifier then outputs the predicted relation label with an associated score.
 
-```
+```python
 from transformers import pipeline
 
 classifier = pipeline("text-classification", model="Glasgow-AI4BioMed/synthetic_relex")
