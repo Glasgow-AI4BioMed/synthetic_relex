@@ -46,7 +46,7 @@ def main():
         return example
     dataset = dataset.map(preprocess_labels)
 
-    model_name = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract"
+    model_name = "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     tokenizer.add_tokens(["[E1]","[/E1]","[E2]","[/E2]"])
@@ -62,6 +62,7 @@ def main():
 
     model = AutoModelForSequenceClassification.from_pretrained(model_name, id2label=id2label)
     model.resize_token_embeddings(len(tokenizer))
+    for param in model.parameters(): param.data = param.data.contiguous() # To fix strange non-contiguous error
     
     # Compute class weights to address class imbalance
     label_list = tokenized_datasets["train"]["label"]
@@ -98,7 +99,7 @@ def main():
         learning_rate=1e-5,
         per_device_train_batch_size=16,
         per_device_eval_batch_size=32,
-        num_train_epochs=1,
+        num_train_epochs=16,
         weight_decay=0.01,
         load_best_model_at_end=True,
         metric_for_best_model="f1",
