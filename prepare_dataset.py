@@ -66,7 +66,7 @@ def main():
             
             if a_name != b_name and (a_type,b_type) in relation_specs:
                 tmp_sentence = sentence.replace(a_name,f'[E1]{a_name}[/E1]').replace(b_name,f'[E2]{b_name}[/E2]')
-                dataset.append( {'doc_id':doc_id, 'text':tmp_sentence, 'label':labeled_pairs.get((a_name,b_name),'none')} )
+                dataset.append( {'doc_id':doc_id, 'text':tmp_sentence, 'label':labeled_pairs.get((a_name,b_name),'none'), 'entity1':a_name, 'type1':a_type, 'entity2':b_name, 'type2':b_type} )
 
     sample_counts = Counter( x['label'] for x in dataset )
     print(f"{sample_counts}")
