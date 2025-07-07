@@ -38,3 +38,15 @@ dataset = load_dataset('Glasgow-AI4BioMed/synthetic_relex')
 # To see a single sample of the dataset:
 dataset['train'][0]
 ```
+
+## ⬇️ Format
+
+The dataset contains three columns:
+
+- doc_id: This is a combination of the PubMed ID, PMC ID and DOI for a document (pipe-delimited)
+- text: This is a sentence from the document with two entities identified with [E1][/E1] and [E2][/E2] tags around them.
+- label: This is the label for the relation between the two entities in the text. Note that it is directional (so [E1] -> [E2] does not mean that [E2] -> [E1]).
+- entity1: The text of the first entity
+- type1: The type of the first entity
+- entity2: The text of the second entity
+- type2: The type of the second entity
