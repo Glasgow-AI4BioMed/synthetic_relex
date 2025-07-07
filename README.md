@@ -19,11 +19,11 @@ classifier("[E1]Paclitaxel[/E1] is a common chemotherapy used for [E2]lung cance
 # [{'label': 'treats', 'score': 0.9995}]
 ```
 
-## Dataset
+## 📝 Dataset
 
 The model is trained from relation annotations that were created using a Llama3.3 70B model. No humans were involved in the annotation process so there will be mistakes. The dataset contains sentences and entity annotations from [PubTator Central](https://www.ncbi.nlm.nih.gov/research/pubtator3/).
 
-The dataset can be accessed through the HuggingFace datasets repo Glasgow-AI4BioMed/synthetic_relex. The code below shows how to load it.
+The dataset can be accessed through the HuggingFace datasets repo Glasgow-AI4BioMed/synthetic_relex. It can be loaded using the [datasets library](https://pypi.org/project/datasets/) as below:
 
 ```
 

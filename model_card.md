@@ -2,6 +2,10 @@
 
 This is a relation extraction model that is distilled from Llama 3.3 70B down to a BERT model. It is a [microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext](https://huggingface.co/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext) model that has been fine-tuned on synthetic labels created with Llama 3.3 70B when prompted with sentences from [PubTator Central](https://www.ncbi.nlm.nih.gov/research/pubtator3/).
 
+**Note:** No humans were involved in annotating the dataset used, so there may be erroneous annotations. Detailed evaluation by human experts would be needed to gain an accurate view of the model's accuracy. The dataset and model offer a starting point for understanding and development of biomedical relation extraction models.
+
+More information about the model and dataset can be found at the project repo: https://github.com/Glasgow-AI4BioMed/synthetic_relex
+
 ## 🚀 Example Usage
 
 The model can classify the relationship between two entities into one of X labels. The labels are: 
@@ -19,6 +23,6 @@ classifier("[E1]Paclitaxel[/E1] is a common chemotherapy used for [E2]lung cance
 # [{'label': 'treats', 'score': 0.9995}]
 ```
 
-## Performance
+## 📈 Performance
 
 Todo
