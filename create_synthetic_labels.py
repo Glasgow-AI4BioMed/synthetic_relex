@@ -96,10 +96,14 @@ def do_openie(llm_model, nlp, doc_id, doc, relnames):
     prompts = [ chat_template.format(system_prompt=system_prompt, question=question) for question in questions ]
 
     guided_decoding_params = GuidedDecodingParams(json=triple_schema)
-        
-    results = []
-    for chunk in chunked(prompts, 100):
-        results += llm_model.generate(chunk, SamplingParams(max_tokens=1024, top_k=1, guided_decoding=guided_decoding_params), use_tqdm=False)
+
+    try:
+        results = []
+        for chunk in chunked(prompts, 100):
+            results += llm_model.generate(chunk, SamplingParams(max_tokens=1024, top_k=1, guided_decoding=guided_decoding_params), use_tqdm=False)
+    except ValueError:
+        return []
+            
 
     relnames_set = set(relnames)
     final_output = []
