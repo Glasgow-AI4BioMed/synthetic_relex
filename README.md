@@ -58,7 +58,7 @@ python create_synthetic_labels.py --input_archive BioCXML.0.tar.gz --relation_sp
 The annotated sentences are then reformatted into a HuggingFace dataset with appropriate training/validation/test split.
 
 ```bash
-python prepare_dataset.py --input_sentences sentences.jsonl.gz --relation_specs relation_specs.json --min_sample_count 200 --output_dataset synthetic_relex_dataset
+python prepare_dataset.py --input_sentences sentences.jsonl.gz --relation_specs relation_specs.json --min_sample_count 250 --output_dataset synthetic_relex_dataset
 ```
 
 A BERT-based classifier, using [microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext](https://huggingface.co/microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext) as the base model, is then trained with the dataset with a Sequence Classification objective:
