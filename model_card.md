@@ -30,7 +30,7 @@ classifier = pipeline("text-classification", model="Glasgow-AI4BioMed/synthetic_
 classifier("[E1]Paclitaxel[/E1] is a common chemotherapy used for [E2]lung cancer[/E2].")
 
 # Output:
-# [{'label': 'treats', 'score': 0.99671870470047}]
+# [{'label': 'treats', 'score': 0.9868311882019043}]
 ```
 
 ## 📈 Performance
